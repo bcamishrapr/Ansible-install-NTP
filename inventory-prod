@@ -1,6 +1,6 @@
 jenkins ansible_host=192.168.33.11 
 nagios ansible_host=192.168.33.15 
-aws ansible_host=13.233.173.255
+aws ansible_host=X.X.X.X
 
 [raghav]
 jenkins
