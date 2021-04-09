@@ -1,0 +1,17 @@
+jenkins ansible_host=192.168.33.11 
+nagios ansible_host=192.168.33.15 
+aws ansible_host=13.233.173.255
+
+[raghav]
+jenkins
+nagios
+
+[prasoon]
+aws
+
+[prasoon:vars]
+ansible_ssh_private_key_file=./gymso-pair.pem
+ansible_user=centos
+
+[raghav:vars]
+ansible_user=admin

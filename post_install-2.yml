@@ -1,0 +1,87 @@
+---
+- name: Setup NTP service
+  hosts: all
+  become: yes
+  tasks:
+    - name: Install NTP on Centos 
+      yum:
+        name: "{{item}}"
+        state: present
+      when: ansible_distribution == "CentOS"
+      loop:
+        - ntp
+
+    - name: Install NTP on Ubuntu
+      apt:
+        name: "{{item}}"
+        state: present
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+      loop:
+        - ntp
+
+
+    - name: Start & Enable service on Centos
+      service:
+        name: ntpd
+        state: started
+        enabled: yes
+      when: ansible_distribution == "CentOS"
+
+
+    - name: Start & Enable service on Ubuntu
+      service:
+        name: ntp
+        state: started
+        enabled: yes
+      when: ansible_distribution == "Ubuntu"
+    
+
+      
+    - name: Deploy ntp conf for centos
+      copy:
+        src: files/ntp.conf_centos
+        dest: /etc/ntp.conf
+        backup: yes
+      when: ansible_distribution == "CentOS"
+      notify:
+        - ReStart service on Centos
+
+    - name: Deploy ntp conf for ubuntu
+      copy:
+        src: files/ntp.conf_ubuntu
+        dest: /etc/ntp.conf
+        backup: yes
+      when: ansible_distribution == "Ubuntu"
+      notify:
+        - ReStart service on Ubuntu
+
+    - name: Add users
+      user:
+        name: "{{item}}"
+        state: present
+      loop:
+        - alpha
+        - beta
+        - gamma
+
+    - name: Setup banner file
+      copy:
+        content: "This is a {{ansible_distribution}} OS Managed by Ansible control machine.\n"
+        dest: /etc/motd
+
+  handlers:
+    - name: ReStart service on Centos
+      service:
+        name: ntpd
+        state: restarted
+        enabled: yes
+      when: ansible_distribution == "CentOS"
+
+    - name: ReStart service on Ubuntu
+      service:
+        name: ntp
+        state: restarted
+        enabled: yes
+      when: ansible_distribution == "Ubuntu"
+
